@@ -1,4 +1,4 @@
-# netflix-GPT
+🚀 # Netflix-GPT
 
 - Create files and folders 
 - Configured Tailwind CSS
