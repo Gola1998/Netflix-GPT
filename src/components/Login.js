@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
@@ -13,15 +15,51 @@ const Login = () => {
   const handleButtonClick = () => {
     // console.log("Email", email);
     // console.log("Password", password);
+    console.log("Button clicked!");
 
     console.log(email.current.value);
     console.log(password.current.value);
     const message = checkValidData(
       email.current.value,
       password.current.value,
-      name.current.value
-    );
+      isSignInForm ? null : name.current?.value // Avoid reading .value if null
+    ); 
+
     setErrorMessage(message);
+    if (message) return;
+
+    if (!isSignInForm) {
+      // Sign Up Logic
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("Signed Up User", user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("Sign In user", user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    }
   };
 
   const toggleSignInForm = () => {
@@ -44,12 +82,7 @@ const Login = () => {
         <h1 className="font-bold text-white">
           {isSignInForm ? "Sign In" : "Sign Up"}
         </h1>
-        <input
-          ref={email}
-          type="text"
-          placeholder="Email Address"
-          className="p-2 m-2"
-        />
+
         {/* Render "Full Name" input field only when the user is on the Sign-Up form (not Sign-In) */}
         {!isSignInForm && (
           <input
@@ -59,6 +92,14 @@ const Login = () => {
             className="p-2 m-2"
           />
         )}
+
+        <input
+          ref={email}
+          type="text"
+          placeholder="Email Address"
+          className="p-2 m-2"
+        />
+
         <input
           ref={password}
           type="password"
