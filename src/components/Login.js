@@ -1,29 +1,31 @@
 import { useState, useRef } from "react";
 import Header from "./Header";
 import { checkValidData } from "../utils/validate";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom"; // Correct use of the hook
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate(); // Correct hook usage here
+  const dispatch = useDispatch();
 
   const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
 
   const handleButtonClick = () => {
-    // console.log("Email", email);
-    // console.log("Password", password);
-    console.log("Button clicked!");
-
-    console.log(email.current.value);
-    console.log(password.current.value);
     const message = checkValidData(
       email.current.value,
       password.current.value,
-      isSignInForm ? null : name.current?.value // Avoid reading .value if null
-    ); 
+      isSignInForm ? null : name.current?.value
+    );
 
     setErrorMessage(message);
     if (message) return;
@@ -37,6 +39,20 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: "https://example.com/jane-q-user/profile.jpg",
+          })
+            .then(() => {
+              const { uid, email, displayName } = auth.currentUser;
+              dispatch(
+                addUser({ uid: uid, email: email, displayName: displayName })
+              );
+              navigate("/browse"); // Use navigate for routing after successful sign-up
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
           console.log("Signed Up User", user);
         })
         .catch((error) => {
@@ -45,6 +61,7 @@ const Login = () => {
           setErrorMessage(errorCode + "-" + errorMessage);
         });
     } else {
+      // Sign In Logic
       signInWithEmailAndPassword(
         auth,
         email.current.value,
@@ -53,6 +70,7 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           console.log("Sign In user", user);
+          navigate("/browse"); // Use navigate for routing after successful sign-in
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -116,7 +134,7 @@ const Login = () => {
         <p className="text-white cursor-pointer" onClick={toggleSignInForm}>
           {isSignInForm
             ? "New to Netflix? Sign Up Now"
-            : "Already registerd? Sign In Now"}
+            : "Already registered? Sign In Now"}
         </p>
       </form>
     </div>

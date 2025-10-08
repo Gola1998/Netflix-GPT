@@ -4,6 +4,16 @@
 - Configured Tailwind CSS
 - Header
 - Login Form
+- Sign Up Form
+- Form Validation
+- useRef Hook
+- Firebase Setup
+- Create SignUp Use Account
+- Implement Sign In user Api
+- Created Redux Store with userSlice
+- Implemented Sign Out
+- Update Profile
+- Fetch from TMDB movies
 
 
 
