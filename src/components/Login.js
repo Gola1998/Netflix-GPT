@@ -7,13 +7,11 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom"; // Correct use of the hook
 import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate(); // Correct hook usage here
   const dispatch = useDispatch();
 
   const name = useRef(null);
@@ -48,7 +46,6 @@ const Login = () => {
               dispatch(
                 addUser({ uid: uid, email: email, displayName: displayName })
               );
-              navigate("/browse"); // Use navigate for routing after successful sign-up
             })
             .catch((error) => {
               setErrorMessage(error.message);
@@ -69,8 +66,7 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log("Sign In user", user);
-          navigate("/browse"); // Use navigate for routing after successful sign-in
+          // console.log("Sign In user", user);
         })
         .catch((error) => {
           const errorCode = error.code;
