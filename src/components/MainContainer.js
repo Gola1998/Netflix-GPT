@@ -8,7 +8,7 @@ const mainContainer = () => {
   if (!movies) return; // if(movies == null) return;  both are same thing
 
   const mainMovie = movies[0];
-  console.log("main movie", mainMovie);
+  // console.log("main movie", mainMovie);
 
   const {original_title, overview, id}  = mainMovie;
 
