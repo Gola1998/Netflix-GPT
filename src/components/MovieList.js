@@ -1,7 +1,7 @@
 import MovieCard from "./MovieCard";
 
 const MovieList = ({ title, movies }) => {
-  console.log("movies", movies);
+  // console.log("movies", movies);
 
   if (!movies || movies.length === 0) {
     return null; // or a loading spinner
